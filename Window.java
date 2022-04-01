@@ -5,7 +5,7 @@ public class Window {
     public Window find(PresChain head, int key) {
         Window window = new Window();
 
-        window.pred = head.contains(key);
+        window.pred = head.contains(head, key);
         if (window.pred != null) {
             window.curr = pred.next;
             return window; // we found it

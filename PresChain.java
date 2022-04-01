@@ -19,7 +19,15 @@ public class PresChain {
 
     }
 
-    public PresChain contains(int key) {
+    public PresChain contains(PresChain head, int key) {
+        PresChain curr = head;
+
+        while (curr.val < key) {
+            curr = curr.next;
+        }
+        if (curr.val == key && curr.marked.getPlain() == false) {
+            return curr;
+        }
         return null;
     }
 }
