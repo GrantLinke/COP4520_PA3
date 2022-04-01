@@ -19,7 +19,7 @@ public class PresChain {
 
     }
 
-    public int contains() {
-        return val;
+    public PresChain contains(int key) {
+        return null;
     }
 }
