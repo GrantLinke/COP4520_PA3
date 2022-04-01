@@ -8,7 +8,9 @@ public class BDayParty {
 
     public static int nInf = -9999999;
     public static int pInf = 9999999;
+    public static int[] presents = new int[500000];
     public static AtomicInteger presentBag = new AtomicInteger(0); // how we keep track of presents left in bag
+    public static AtomicInteger sIndex = new AtomicInteger(0);
     public static AtomicBoolean[] thanks = new AtomicBoolean[500000];
 
     public static void main(String[] args) {
@@ -16,8 +18,6 @@ public class BDayParty {
         PresChain leftSentinel = new PresChain(nInf, null); // sentinel node left
         PresChain rightSentinel = new PresChain(pInf, null); // sentinel node right
         leftSentinel.next = rightSentinel; // linking sentinels together
-
-        int[] presents = new int[500000];
 
         for (int i = 0; i < 500000; i++) {
             presents[i] = i; // populate presents with 500,000 entries
