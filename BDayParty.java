@@ -12,12 +12,12 @@ public class BDayParty {
     public static AtomicInteger presentBag = new AtomicInteger(0); // how we keep track of presents left in bag
     public static AtomicInteger sIndex = new AtomicInteger(0);
     public static AtomicBoolean[] thanks = new AtomicBoolean[500000];
+    public static Node leftSentinel = new Node(nInf, null); // sentinel node left
+    public static Node rightSentinel = new Node(pInf, null); // sentinel node right
 
     public static void main(String[] args) {
         ExecutorService threadPool = Executors.newFixedThreadPool(4); // 4 servents
-        PresChain leftSentinel = new PresChain(nInf, null); // sentinel node left
-        PresChain rightSentinel = new PresChain(pInf, null); // sentinel node right
-        leftSentinel.next = rightSentinel; // linking sentinels together
+        leftSentinel.next.set(rightSentinel, false); // linking sentinels together
 
         for (int i = 0; i < 500000; i++) {
             presents[i] = i; // populate presents with 500,000 entries
