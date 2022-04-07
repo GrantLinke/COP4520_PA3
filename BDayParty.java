@@ -1,7 +1,9 @@
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicMarkableReference;
 
 public class BDayParty {
 
@@ -14,14 +16,14 @@ public class BDayParty {
     public static AtomicInteger check = new AtomicInteger(0); // counts times we contains() as requested
     public static AtomicInteger checkY = new AtomicInteger(0); // check Yes
     public static AtomicInteger checkN = new AtomicInteger(0); // check No
-    public static Node leftSentinel = new Node(nInf, null); // sentinel node left
-    public static Node rightSentinel = new Node(pInf, null); // sentinel node right
+    public static Node leftSentinel = new Node(nInf); // sentinel node left
+    public static Node rightSentinel = new Node(pInf); // sentinel node right
 
     public static void main(String[] args) {
         ExecutorService threadPool = Executors.newFixedThreadPool(4); // 4 servents
-        leftSentinel.next.set(rightSentinel, false); // linking sentinels together
+        leftSentinel.next = new AtomicMarkableReference<Node>(rightSentinel, false); // linking sentinels together
 
-        for (int i = 0; i < 500000; i++) {
+        for (int i = 0; i < 15; i++) {
             presents[i] = i; // populate presents with 500,000 entries
         }
 
@@ -30,8 +32,12 @@ public class BDayParty {
             threadPool.execute(serv);
         }
 
-        for (int i = 0; i < 4; i++) {
-            threadPool.shutdown();
+        threadPool.shutdown();
+        try {
+            threadPool.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
         System.out.printf(

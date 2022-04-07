@@ -5,9 +5,8 @@ public class Node {
     int key;
     AtomicMarkableReference<Node> next;
 
-    public Node(int key, Node next) {
+    public Node(int key) {
         this.key = key;
-        this.next = new AtomicMarkableReference<Node>(next, false);
     }
 
     public static boolean add(Node head, int key) {
@@ -22,7 +21,7 @@ public class Node {
             if (curr.key == key) { // key already exists (this shouldn't happen, our array has only unique values)
                 return false;
             }
-            Node newNode = new Node(key, null);
+            Node newNode = new Node(key);
             newNode.next = new AtomicMarkableReference<Node>(curr, false);
             if (pred.next.compareAndSet(curr, newNode, false, false)) {
                 return true;
@@ -64,7 +63,10 @@ public class Node {
             curr = curr.next.getReference();
         }
 
-        Node succ = curr.next.get(marked);
+        if (curr.next != null) {
+            Node succ = curr.next.get(marked);
+        }
+
         return (curr.key == key && !marked[0]);
     }
 }

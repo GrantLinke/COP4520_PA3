@@ -15,8 +15,16 @@ public class Window {
         retry: while (true) {
             pred = head;
             curr = pred.next.getReference();
+
+            if (curr.next == null) {
+                return new Window(pred, curr);
+            }
             while (true) {
-                succ = curr.next.get(marked);
+                if (curr.next != null) {
+                    succ = curr.next.get(marked);
+                } else {
+                    continue retry;
+                }
 
                 while (marked[0]) {
                     snip = pred.next.compareAndSet(curr, succ, false, false);
