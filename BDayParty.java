@@ -27,7 +27,7 @@ public class BDayParty {
 
         Servant serv = new Servant();
         for (int i = 0; i < 4; i++) {
-            threadPool.submit(serv);
+            threadPool.execute(serv);
         }
 
         for (int i = 0; i < 4; i++) {
