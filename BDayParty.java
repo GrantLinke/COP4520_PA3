@@ -1,7 +1,6 @@
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BDayParty {
@@ -9,9 +8,12 @@ public class BDayParty {
     public static int nInf = -9999999;
     public static int pInf = 9999999;
     public static int[] presents = new int[500000];
+    public static AtomicInteger index = new AtomicInteger(0); // index thru array presents
     public static AtomicInteger presentBag = new AtomicInteger(0); // how we keep track of presents left in bag
-    public static AtomicInteger sIndex = new AtomicInteger(0);
-    public static AtomicBoolean[] thanks = new AtomicBoolean[500000];
+    public static AtomicInteger thanks = new AtomicInteger(0); // to keep track of thanks written
+    public static AtomicInteger check = new AtomicInteger(0); // counts times we contains() as requested
+    public static AtomicInteger checkY = new AtomicInteger(0); // check Yes
+    public static AtomicInteger checkN = new AtomicInteger(0); // check No
     public static Node leftSentinel = new Node(nInf, null); // sentinel node left
     public static Node rightSentinel = new Node(pInf, null); // sentinel node right
 
@@ -21,8 +23,20 @@ public class BDayParty {
 
         for (int i = 0; i < 500000; i++) {
             presents[i] = i; // populate presents with 500,000 entries
-            thanks[i] = new AtomicBoolean(false); // makes it so we haven't marked any presents
         }
+
+        Servant serv = new Servant();
+        for (int i = 0; i < 4; i++) {
+            threadPool.submit(serv);
+        }
+
+        for (int i = 0; i < 4; i++) {
+            threadPool.shutdown();
+        }
+
+        System.out.printf(
+                "Results:\nThanks written: %d\nTimes checked: %d\n\tCheck success: %d\n\tCheck unsuccessful: %d",
+                thanks.getPlain(), check.getPlain(), checkY.getPlain(), checkN.getPlain());
 
     }
 

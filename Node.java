@@ -10,7 +10,7 @@ public class Node {
         this.next = new AtomicMarkableReference<Node>(next, false);
     }
 
-    public boolean add(Node head, int key) {
+    public static boolean add(Node head, int key) {
         Node pred, curr;
 
         while (true) {
@@ -30,7 +30,7 @@ public class Node {
         }
     }
 
-    public boolean delete(Node head, int key) {
+    public static boolean delete(Node head, int key) {
         boolean snip;
 
         while (true) {
@@ -56,7 +56,7 @@ public class Node {
 
     }
 
-    public boolean contains(Node head, int key) {
+    public static boolean contains(Node head, int key) {
         Node curr = head;
         boolean[] marked = { true };
 
