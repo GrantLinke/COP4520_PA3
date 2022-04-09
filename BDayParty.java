@@ -10,10 +10,12 @@ public class BDayParty {
 
     public static int nInf = -9999999;
     public static int pInf = 9999999;
-    public static int numPres = 100000;
+    public static int numPres = 500000;
     public static int[] presents = new int[500000];
     public static int[] delPresents = new int[500000];
-    public static AtomicInteger index = new AtomicInteger(0); // index thru array presents
+    public static AtomicInteger addIndex = new AtomicInteger(0); // index thru array presents for add
+    public static AtomicInteger delIndex = new AtomicInteger(0); // how to track which to delete.
+    public static AtomicInteger comms = new AtomicInteger(0); // communication line add->del
     public static AtomicInteger presentBag = new AtomicInteger(0); // how we keep track of presents left in bag
     public static AtomicInteger thanks = new AtomicInteger(0); // to keep track of thanks written
     public static AtomicLong check = new AtomicLong(0); // counts times we contains() as requested
@@ -30,6 +32,7 @@ public class BDayParty {
             presents[i] = i; // populate presents with 500,000 entries
             delPresents[i] = i;
         }
+        delPresents[0] = -1;
 
         shuffle(presents); // giving a random order to insert
 

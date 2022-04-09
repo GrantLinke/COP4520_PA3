@@ -5,70 +5,67 @@ public class Servant implements Runnable {
     public void run() {
         Random rand = new Random();
         boolean result = false;
+        Node head = BDayParty.leftSentinel;
+        int i = 0;
 
         while (BDayParty.thanks.get() < BDayParty.numPres) // still got some thanks to write.
         {
-            int task = 0;
-
-            // the idea is to fill in chunks. 5000 at a time for efficiency
-            if ((BDayParty.presentBag.get() + 1) % 5000 != 0
-                    || BDayParty.thanks.get() >= BDayParty.presentBag.get() - 1000) {
-                task = 0;
-            } else {
-                task = rand.nextInt(2) + 1;
+            if (BDayParty.addIndex.get() >= BDayParty.numPres) {
+                BDayParty.addIndex.set(-1);
+            }
+            if (BDayParty.delIndex.get() >= BDayParty.numPres) {
+                BDayParty.delIndex.set(0);
+                System.out.printf("Thank yous written: %d\n", BDayParty.thanks.get());
             }
 
-            if (BDayParty.index.getPlain() > BDayParty.numPres - 1) { // if it's max but we didn't loop out, here we go
-                BDayParty.index.set(0);
-            }
-
-            // don't want to increment just to check a number
-            int i = BDayParty.index.get();
-            if (task != 1) {
-                i = BDayParty.index.getAndIncrement();
-            }
-
-            while (true) { // present is on chain already, pls skip
-                if (BDayParty.presents[i] == -1 && task == 0) {
-                    i = BDayParty.index.getAndIncrement();
-                } else {
-                    break;
-                }
-            }
-
-            switch (task) {
-                case 0:
-                    // add / put pres on chain
-                    result = Node.add(BDayParty.leftSentinel, BDayParty.presents[i]);
-                    if (result) { // add worked! no longer in bag
-                        BDayParty.presents[i] = -1;
-                        BDayParty.presentBag.incrementAndGet(); // we just took a present out the bag
-                    } else {
-                        // System.out.println("Add failed.");
-                    }
-                    break;
-                case 2:
-                    // delete / thanks
-                    result = Node.delete(BDayParty.leftSentinel, BDayParty.delPresents[i]);
-                    if (result) { // delete worked! We just wrote a thank you.
-                        BDayParty.thanks.getAndIncrement();
-                    }
-                    break;
+            switch ((int) Thread.currentThread().getId() % 4) { // servants have specific tasks assigned to them
+                case 0: // add
                 case 1:
-                    // contains
-                    result = Node.contains(BDayParty.leftSentinel, rand.nextInt(BDayParty.numPres));
+                    if (BDayParty.addIndex.get() == -1) {
+                        continue;
+                    }
+                    i = BDayParty.addIndex.getAndIncrement(); // grab our add index
+                    result = Node.add(head, BDayParty.presents[i]);
+                    if (result) {
+                        // letting del servant know that we added a present
+                        BDayParty.delPresents[BDayParty.comms.getAndIncrement()] = BDayParty.presents[i];
+                        BDayParty.presents[i] = -1;
+                        BDayParty.presentBag.getAndIncrement(); // just removed a present from bag.
+
+                    }
+                    break;
+                case 2: // del
+                    if (BDayParty.delPresents[0] == -1) { // I do this because delete has to be told when to start
+                        break;
+                    }
+
+                    result = Node.delete(head, BDayParty.delPresents[BDayParty.delIndex.get()]);
+                    if (result) { // wrote a thank you
+                        BDayParty.thanks.getAndIncrement();
+                        BDayParty.delIndex.getAndIncrement();
+                    } else {
+                        BDayParty.delIndex.getAndIncrement(); // in case we get stuck at something c3 deleted.
+                    }
+                    break;
+                case 3: // contains
+                    i = rand.nextInt(BDayParty.numPres);
+                    result = Node.contains(BDayParty.leftSentinel, i);
                     BDayParty.check.getAndIncrement();
-                    if (result) { // it was in there
+
+                    if (result) { // making contains useful, delete on find
                         BDayParty.checkY.getAndIncrement();
-                    } else { // not in there
+                        result = Node.delete(head, BDayParty.presents[i]);
+
+                        if (result) {
+                            BDayParty.thanks.getAndIncrement();
+                        }
+
+                    } else {
                         BDayParty.checkN.getAndIncrement();
                     }
                     break;
-                default:
-                    System.out.printf("How?\n");
             }
         }
-
         return;
     }
 
