@@ -7,12 +7,13 @@ public class Node {
 
     public Node(int key) {
         this.key = key;
+        this.next = null;
     }
 
     public static boolean add(Node head, int key) {
         Node pred, curr;
 
-        while (true) {
+        retry: while (true) {
             Window window = new Window(null, null);
             window = window.find(head, key);
 
@@ -21,12 +22,16 @@ public class Node {
             // System.out.printf("pred, curr: (%s, %s)\n", pred, curr);
 
             if (curr.key == key) { // key already exists (this shouldn't happen, our array has only unique values)
+                // System.out.printf("Tried inserting %d, but %d already exists.\n", key,
+                // curr.key);
                 return false;
             }
             Node newNode = new Node(key);
             newNode.next = new AtomicMarkableReference<Node>(curr, false);
             if (pred.next.compareAndSet(curr, newNode, false, false)) {
                 return true;
+            } else {
+                continue retry;
             }
         }
     }
@@ -41,6 +46,7 @@ public class Node {
             Node pred = window.pred, curr = window.curr; // if it exists it returns our key
 
             if (curr.key != key) {
+                // System.out.printf("Curr.key: %d\tkey: %d\n", curr.key, key);
                 return false;
             }
             // else conceptual

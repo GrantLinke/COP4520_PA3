@@ -31,6 +31,9 @@ public class Window {
                     if (!snip) {
                         continue retry;
                     }
+                    if (curr.key == BDayParty.pInf) { // if we hit rSentinel then we die.
+                        return new Window(pred, curr);
+                    }
                     curr = succ;
                     succ = curr.next.get(marked);
                 }

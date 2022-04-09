@@ -6,16 +6,30 @@ public class Servant implements Runnable {
         Random rand = new Random();
         boolean result = false;
 
-        while (BDayParty.thanks.get() < 15) // still got some thanks to write.
+        while (BDayParty.thanks.get() < BDayParty.numPres) // still got some thanks to write.
         {
-            int task = rand.nextInt(3);
-            if (BDayParty.index.getPlain() > 14) { // if it's max but we didn't loop out, here we go again
+            int task = 0;
+
+            // the idea is to fill in chunks. 5000 at a time for efficiency
+            if ((BDayParty.presentBag.get() + 1) % 5000 != 0
+                    || BDayParty.thanks.get() >= BDayParty.presentBag.get() - 1000) {
+                task = 0;
+            } else {
+                task = rand.nextInt(2) + 1;
+            }
+
+            if (BDayParty.index.getPlain() > BDayParty.numPres - 1) { // if it's max but we didn't loop out, here we go
                 BDayParty.index.set(0);
             }
-            int i = BDayParty.index.getAndIncrement();
 
-            while (true) { // present is either on chain or ty note written.
-                if (BDayParty.presents[i] == -1 && BDayParty.presentBag.get() < 15) {
+            // don't want to increment just to check a number
+            int i = BDayParty.index.get();
+            if (task != 1) {
+                i = BDayParty.index.getAndIncrement();
+            }
+
+            while (true) { // present is on chain already, pls skip
+                if (BDayParty.presents[i] == -1 && task == 0) {
                     i = BDayParty.index.getAndIncrement();
                 } else {
                     break;
@@ -25,35 +39,29 @@ public class Servant implements Runnable {
             switch (task) {
                 case 0:
                     // add / put pres on chain
-                    if (BDayParty.presentBag.get() > 15) { // we can just skip add, nothing left to add
-                        continue;
-                    }
                     result = Node.add(BDayParty.leftSentinel, BDayParty.presents[i]);
                     if (result) { // add worked! no longer in bag
                         BDayParty.presents[i] = -1;
-                        System.out.printf("Add worked!\n");
                         BDayParty.presentBag.incrementAndGet(); // we just took a present out the bag
                     } else {
-                        // System.out.printf("Something went wrong in add.\n");
-                    }
-                    break;
-                case 1:
-                    // delete / thanks
-                    result = Node.delete(BDayParty.leftSentinel, BDayParty.presents[i]);
-                    if (result) { // delete worked! We just wrote a thank you.
-                        BDayParty.thanks.getAndIncrement();
-                    } else {
-                        // System.out.printf("Something went wrong in delete.\n");
+                        // System.out.println("Add failed.");
                     }
                     break;
                 case 2:
+                    // delete / thanks
+                    result = Node.delete(BDayParty.leftSentinel, BDayParty.delPresents[i]);
+                    if (result) { // delete worked! We just wrote a thank you.
+                        BDayParty.thanks.getAndIncrement();
+                    }
+                    break;
+                case 1:
                     // contains
-                    result = Node.contains(BDayParty.leftSentinel, BDayParty.presents[i]);
+                    result = Node.contains(BDayParty.leftSentinel, rand.nextInt(BDayParty.numPres));
                     BDayParty.check.getAndIncrement();
                     if (result) { // it was in there
-                        BDayParty.checkY.get();
+                        BDayParty.checkY.getAndIncrement();
                     } else { // not in there
-                        BDayParty.checkN.get();
+                        BDayParty.checkN.getAndIncrement();
                     }
                     break;
                 default:
