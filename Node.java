@@ -15,8 +15,10 @@ public class Node {
         while (true) {
             Window window = new Window(null, null);
             window = window.find(head, key);
+
             pred = window.pred;
             curr = window.curr;
+            // System.out.printf("pred, curr: (%s, %s)\n", pred, curr);
 
             if (curr.key == key) { // key already exists (this shouldn't happen, our array has only unique values)
                 return false;

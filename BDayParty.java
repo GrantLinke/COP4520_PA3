@@ -32,9 +32,12 @@ public class BDayParty {
             threadPool.execute(serv);
         }
 
-        threadPool.shutdown();
+        for (int i = 0; i < 4; i++) {
+            threadPool.shutdown();
+        }
+
         try {
-            threadPool.awaitTermination(1, TimeUnit.MINUTES);
+            threadPool.awaitTermination(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

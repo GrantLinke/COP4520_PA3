@@ -23,7 +23,7 @@ public class Window {
                 if (curr.next != null) {
                     succ = curr.next.get(marked);
                 } else {
-                    continue retry;
+                    return new Window(pred, curr);
                 }
 
                 while (marked[0]) {
