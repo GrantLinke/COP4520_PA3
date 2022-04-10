@@ -1,5 +1,4 @@
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Servant implements Runnable {
     Random rand = new Random();
