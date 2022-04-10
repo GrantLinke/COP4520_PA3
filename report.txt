@@ -1,0 +1,34 @@
+HOW TO COMPILE
+(Part 1)
+javac BDayParty.java
+java BDayParty
+
+>>>Output
+
+(Part 2)
+javac ATRM.java
+java ATRM
+
+>>>Output
+
+
+REPORT FOR PART 1:
+
+This problem took me a whole lot of time to solve. That's beside the point.
+
+My solution to improve the minotaurs dilema was to assign specific servants specific tasks. The servants maintain a line of communication to achieve their goal
+Whenever a servant adds a gift to the chain, another servant is notified, that servent will then start to remove them from the chain in the order
+in which they were placed on it. There's probably a more efficient way to do this, that takes advantage of the ordering of the list, but I found this to be easier.
+Further, another servant will use contains on random numbers, if they get a hit, they remove the present at that moment.
+
+Additionally, the servants that are adding will stop adding when the chain hits a certain capacity (3000 in my implementation). I did this because I realized that adding all
+at once and then deleting all at once was abysmally slow, I forgot how awful linear traversal is.
+
+NOTE: The algorithm is still pretty slow for 500,000 presents, but is REAL fast for 100,000. I figured it should only take about 5x as long but it felt more like 10x as long.
+Not entirely sure what's causing such a slowdown with the more numbers (maybe it's shuffle taking a while, idk).
+
+NOTE 2: My original structure worked around random task delegation. This was horribly broken, there was no system between the servants to actually efficiently remove presents
+I would legit just keep searching and searching with random numbers, iterating thru 1-500,000 again and again. I ended up removing like 2000 presents in 5 minutes lololol
+It was really slow and inefficient.
+
+REPORT FOR PART 2:
