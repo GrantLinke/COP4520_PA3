@@ -1,11 +1,13 @@
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Servant implements Runnable {
+    Random rand = new Random();
+    Node head = BDayParty.leftSentinel;
+
     @Override
     public void run() {
-        Random rand = new Random();
         boolean result = false;
-        Node head = BDayParty.leftSentinel;
         int i = 0;
 
         while (BDayParty.thanks.get() < BDayParty.numPres) // still got some thanks to write.
@@ -15,15 +17,20 @@ public class Servant implements Runnable {
             }
             if (BDayParty.delIndex.get() >= BDayParty.numPres) {
                 BDayParty.delIndex.set(0);
-                System.out.printf("Thank yous written: %d\n", BDayParty.thanks.get());
+            }
+            if (BDayParty.comms.get() >= BDayParty.numPres) {
+                BDayParty.comms.set(-1);
             }
 
             switch ((int) Thread.currentThread().getId() % 4) { // servants have specific tasks assigned to them
                 case 0: // add
                 case 1:
-                    if (BDayParty.addIndex.get() == -1) {
-                        continue;
+                    // don't want chain to exceed length of 3000
+                    if (BDayParty.addIndex.get() == -1 || BDayParty.presentBag.get() - BDayParty.thanks.get() > 3000) {
+                        result = delete(BDayParty.delPresents[BDayParty.delIndex.get()]);
+                        break;
                     }
+
                     i = BDayParty.addIndex.getAndIncrement(); // grab our add index
                     result = Node.add(head, BDayParty.presents[i]);
                     if (result) {
@@ -31,21 +38,12 @@ public class Servant implements Runnable {
                         BDayParty.delPresents[BDayParty.comms.getAndIncrement()] = BDayParty.presents[i];
                         BDayParty.presents[i] = -1;
                         BDayParty.presentBag.getAndIncrement(); // just removed a present from bag.
-
+                        BDayParty.flag.set(true);
                     }
                     break;
                 case 2: // del
-                    if (BDayParty.delPresents[0] == -1) { // I do this because delete has to be told when to start
-                        break;
-                    }
+                    result = delete(BDayParty.delPresents[BDayParty.delIndex.get()]);
 
-                    result = Node.delete(head, BDayParty.delPresents[BDayParty.delIndex.get()]);
-                    if (result) { // wrote a thank you
-                        BDayParty.thanks.getAndIncrement();
-                        BDayParty.delIndex.getAndIncrement();
-                    } else {
-                        BDayParty.delIndex.getAndIncrement(); // in case we get stuck at something c3 deleted.
-                    }
                     break;
                 case 3: // contains
                     i = rand.nextInt(BDayParty.numPres);
@@ -54,11 +52,8 @@ public class Servant implements Runnable {
 
                     if (result) { // making contains useful, delete on find
                         BDayParty.checkY.getAndIncrement();
-                        result = Node.delete(head, BDayParty.presents[i]);
 
-                        if (result) {
-                            BDayParty.thanks.getAndIncrement();
-                        }
+                        result = delete(BDayParty.delPresents[BDayParty.delIndex.get()]);
 
                     } else {
                         BDayParty.checkN.getAndIncrement();
@@ -67,6 +62,25 @@ public class Servant implements Runnable {
             }
         }
         return;
+    }
+
+    public boolean delete(int key) {
+        boolean result = false;
+        if (BDayParty.flag.get() == false) { // I do this because delete has to be told when to start
+            return false;
+        }
+
+        result = Node.delete(head, key);
+        if (result) { // wrote a thank you
+            // System.out.printf("Just deleted node (%d)\n", key);
+            BDayParty.thanks.getAndIncrement();
+            BDayParty.delIndex.getAndIncrement();
+            return true;
+        } else {
+            BDayParty.delIndex.getAndIncrement(); // in case we get stuck
+
+            return false;
+        }
     }
 
 }

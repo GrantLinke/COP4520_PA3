@@ -2,6 +2,7 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicMarkableReference;
@@ -21,6 +22,7 @@ public class BDayParty {
     public static AtomicLong check = new AtomicLong(0); // counts times we contains() as requested
     public static AtomicLong checkY = new AtomicLong(0); // check Yes
     public static AtomicLong checkN = new AtomicLong(0); // check No
+    public static AtomicBoolean flag = new AtomicBoolean(false); // flag
     public static Node leftSentinel = new Node(nInf); // sentinel node left
     public static Node rightSentinel = new Node(pInf); // sentinel node right
 
@@ -46,7 +48,7 @@ public class BDayParty {
         }
 
         try {
-            threadPool.awaitTermination(120, TimeUnit.SECONDS);
+            threadPool.awaitTermination(5, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

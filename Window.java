@@ -35,6 +35,9 @@ public class Window {
                         return new Window(pred, curr);
                     }
                     curr = succ;
+                    if (succ.next == null) {
+                        continue;
+                    }
                     succ = curr.next.get(marked);
                 }
 
