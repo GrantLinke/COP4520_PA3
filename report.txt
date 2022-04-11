@@ -10,6 +10,7 @@ javac ATRM.java
 java ATRM
 
 >>>Output
+(Uncomment line 63 on ATRM.java for a full report to see that it's working, it'll display all the numbers in each LL)
 
 
 REPORT FOR PART 1:
@@ -32,3 +33,13 @@ I would legit just keep searching and searching with random numbers, iterating t
 It was really slow and inefficient.
 
 REPORT FOR PART 2:
+
+This problem sounded really hard when I first read through it, but then I realized it wasn't too bad. I reused the wait-free linked-list, but only needed the add function.
+I decided the best approach was an array of linked lists, one block for each 10 min interval. From here the implementation was fairly simple. Just populate each list with 
+random values (as stated in the problem statement) in each 10 minute interval. From there, gather that info into new arrays for indexing and then go to town. We know our list is
+already sorted, and doesn't support duplicate values, so it should be easy from there. Grab the first and last 5 from each interval, compare them. Difference is always last-first, take the higest of them all.
+
+My solutiuon guarentees progress by using a wait-free linked list, no sensor will have to wait and miss their opportunity.
+The solution is fast. it takes 8 adds simultaneously, but no list will ever expand past 80 nodes. The solution is correct because it separates the values by time interval, if we had only
+one list for all readings, we'd lose track of time (unless we add a field to the node), and it would relay inaccurate results. Duplicate values that are true (like 70 reading at 0-10 & 10-20) wouldn't exist.
+But since there's 8 sensors, we can assume sometimes they're reading the same values at the same time, creating a redundancy, so the list not carrying duplicates can be justifiable.
