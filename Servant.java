@@ -21,38 +21,29 @@ public class Servant implements Runnable {
                 BDayParty.comms.set(-1);
             }
 
-            switch ((int) Thread.currentThread().getId() % 4) { // servants have specific tasks assigned to them
-                case 0: // add
-                case 1:
-                    // don't want chain to exceed length of 3000
-                    if (BDayParty.addIndex.get() == -1 || BDayParty.presentBag.get() - BDayParty.thanks.get() > 3000) {
+            switch (rand.nextInt(2)) { // servants have specific tasks assigned to them
+                case 0: // add then delete
+                    if (BDayParty.addIndex.get() == -1) {
                         result = delete(BDayParty.delPresents[BDayParty.delIndex.get()]);
                         break;
                     }
 
                     i = BDayParty.addIndex.getAndIncrement(); // grab our add index
-                    result = Node.add(head, BDayParty.presents[i]);
+                    result = Node.add(head, BDayParty.presents[i]); // add that boi
+
                     if (result) {
-                        // letting del servant know that we added a present
-                        BDayParty.delPresents[BDayParty.comms.getAndIncrement()] = BDayParty.presents[i];
-                        BDayParty.presents[i] = -1;
-                        BDayParty.presentBag.getAndIncrement(); // just removed a present from bag.
-                        BDayParty.flag.set(true);
+                        BDayParty.presentBag.getAndIncrement(); // juss added yknow
+                        result = delete(BDayParty.presents[i]); // time to sleep with the fishes
                     }
                     break;
-                case 2: // del
-                    result = delete(BDayParty.delPresents[BDayParty.delIndex.get()]);
 
-                    break;
-                case 3: // contains
+                case 1: // contains
                     i = rand.nextInt(BDayParty.numPres);
-                    result = Node.contains(BDayParty.leftSentinel, i);
+                    result = Node.contains(head, i);
                     BDayParty.check.getAndIncrement();
 
-                    if (result) { // making contains useful, delete on find
+                    if (result) {
                         BDayParty.checkY.getAndIncrement();
-
-                        result = delete(BDayParty.delPresents[BDayParty.delIndex.get()]);
 
                     } else {
                         BDayParty.checkN.getAndIncrement();
@@ -65,9 +56,6 @@ public class Servant implements Runnable {
 
     public boolean delete(int key) {
         boolean result = false;
-        if (BDayParty.flag.get() == false) { // I do this because delete has to be told when to start
-            return false;
-        }
 
         result = Node.delete(head, key);
         if (result) { // wrote a thank you

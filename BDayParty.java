@@ -48,7 +48,7 @@ public class BDayParty {
         }
 
         try {
-            threadPool.awaitTermination(5, TimeUnit.MINUTES);
+            threadPool.awaitTermination(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

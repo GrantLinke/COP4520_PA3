@@ -32,6 +32,12 @@ NOTE 2: My original structure worked around random task delegation. This was hor
 I would legit just keep searching and searching with random numbers, iterating thru 1-500,000 again and again. I ended up removing like 2000 presents in 5 minutes lololol
 It was really slow and inefficient.
 
+NOTE 3: (IMPROTANT)
+After some discussion about this problem, I realized that the best solution was to remove a node just as soon as it's added. This removes a ton of the overhead I was having
+with manipulating a ton of different atomic variables all the time. This solution is blazing fast and sees really great runtimes even for 500,000 nodes. This is 
+the solution I ended up with.
+
++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===+
 REPORT FOR PART 2:
 
 This problem sounded really hard when I first read through it, but then I realized it wasn't too bad. I reused the wait-free linked-list, but only needed the add function.
