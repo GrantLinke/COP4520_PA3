@@ -37,6 +37,8 @@ After some discussion about this problem, I realized that the best solution was 
 with manipulating a ton of different atomic variables all the time. This solution is blazing fast and sees really great runtimes even for 500,000 nodes. This is 
 the solution I ended up with.
 
+If you want to see the linked list in action, please uncomment line 62 of Servant.java, you can assume that if I'm successfully deleting then I'm also successfully adding.
+
 +===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===++===+
 REPORT FOR PART 2:
 
